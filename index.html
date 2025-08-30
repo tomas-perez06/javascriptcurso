@@ -2,14 +2,32 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Simulador de Tienda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Virtual</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Simulador de Tienda</h1>
-  <p>
-    Este simulador permite al usuario explorar una pequeña tienda virtual. Podrá ver productos, simular compras, confirmar acciones y calcular totales, utilizando interacción con la consola y cuadros de diálogo.
-  </p>
+  <h1>🛍️ Tienda Virtual</h1>
 
+  <main>
+    <!-- Productos -->
+    <section>
+      <h2>Productos</h2>
+      <div id="productos"></div>
+    </section>
+
+    <!-- Carrito -->
+    <section>
+      <h2>Carrito</h2>
+      <div id="carrito"></div>
+      <p id="total">Total: $0</p>
+      <button id="finalizar">Finalizar compra</button>
+      <div id="mensaje"></div>
+    </section>
+  </main>
+
+  <!-- JS -->
   <script src="js/main.js"></script>
 </body>
 </html>
+

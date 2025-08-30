@@ -1,66 +1,93 @@
-// Declaración de variables y arrays
+// Productos
 const productos = [
   { id: 1, nombre: "Remera", precio: 5000 },
   { id: 2, nombre: "Pantalón", precio: 9000 },
   { id: 3, nombre: "Campera", precio: 15000 }
 ];
 
-let carrito = [];
-let total = 0;
+// Carrito (desde localStorage si existe)
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-// Función para mostrar productos disponibles
+// DOM
+const contenedorProductos = document.getElementById("productos");
+const contenedorCarrito = document.getElementById("carrito");
+const totalHTML = document.getElementById("total");
+const btnFinalizar = document.getElementById("finalizar");
+const mensaje = document.getElementById("mensaje");
+
+// Mostrar productos
 function mostrarProductos() {
-  console.log("Productos disponibles:");
+  contenedorProductos.innerHTML = "";
   productos.forEach(prod => {
-    console.log(`${prod.id}. ${prod.nombre} - $${prod.precio}`);
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <h3>${prod.nombre}</h3>
+      <p>Precio: $${prod.precio}</p>
+      <button onclick="agregarAlCarrito(${prod.id})">Agregar al carrito</button>
+    `;
+    contenedorProductos.appendChild(div);
   });
 }
 
-// Función para agregar productos al carrito
-function agregarAlCarrito() {
-  let seleccion = prompt("Ingrese el ID del producto que desea agregar:\n1. Remera\n2. Pantalón\n3. Campera");
-  let producto = productos.find(p => p.id === parseInt(seleccion));
+// Mostrar carrito
+function mostrarCarrito() {
+  contenedorCarrito.innerHTML = "";
+  carrito.forEach((prod, index) => {
+    const item = document.createElement("p");
+    item.innerHTML = `
+      ${prod.nombre} - $${prod.precio}
+      <button onclick="eliminarDelCarrito(${index})">❌</button>
+    `;
+    contenedorCarrito.appendChild(item);
+  });
 
-  if (producto) {
-    carrito.push(producto);
-    total += producto.precio;
-    alert(`Agregaste ${producto.nombre} al carrito.\nTotal actual: $${total}`);
-  } else {
-    alert("Producto no encontrado. Intente nuevamente.");
-  }
+  const total = carrito.reduce((acc, p) => acc + p.precio, 0);
+  totalHTML.textContent = `Total: $${total}`;
+  localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 
-// Función para finalizar la compra
-function finalizarCompra() {
+// Agregar producto
+function agregarAlCarrito(id) {
+  const producto = productos.find(p => p.id === id);
+  carrito.push(producto);
+  mostrarCarrito();
+  mostrarMensaje(`Agregaste ${producto.nombre} al carrito ✅`, "ok");
+}
+
+// Eliminar producto
+function eliminarDelCarrito(index) {
+  carrito.splice(index, 1);
+  mostrarCarrito();
+  mostrarMensaje("Producto eliminado ❌", "error");
+}
+
+// Finalizar compra
+btnFinalizar.addEventListener("click", () => {
   if (carrito.length === 0) {
-    alert("No agregaste ningún producto.");
-    return;
-  }
-
-  let confirmar = confirm(`Tu total es $${total}. ¿Deseás finalizar la compra?`);
-
-  if (confirmar) {
-    alert("¡Gracias por tu compra!");
+    mostrarMensaje("El carrito está vacío 🚫", "error");
   } else {
-    alert("Compra cancelada.");
+    carrito = [];
+    mostrarCarrito();
+    mostrarMensaje("¡Gracias por tu compra! 🎉", "ok");
+    localStorage.removeItem("carrito");
   }
+});
+
+function mostrarMensaje(texto, tipo) {
+  // Limpiar mensaje anterior
+  mensaje.textContent = texto;
+  mensaje.className = tipo;
+
+  // Fade out automático después de 8 segundos
+  setTimeout(() => {
+    mensaje.classList.add("oculto");
+    setTimeout(() => {
+      mensaje.textContent = "";
+      mensaje.className = "";
+    }, 500); // coincide con la transición de CSS
+  }, 8000);
 }
 
-// Inicio del simulador
-function iniciarSimulador() {
-  alert("Bienvenido a la Tienda Virtual");
-
-  mostrarProductos();
-
-  let continuar = true;
-
-  while (continuar) {
-    agregarAlCarrito();
-    continuar = confirm("¿Querés agregar otro producto?");
-  }
-
-  finalizarCompra();
-}
-
-// Llamada inicial
-iniciarSimulador();
+// Inicializar
+mostrarProductos();
+mostrarCarrito();
